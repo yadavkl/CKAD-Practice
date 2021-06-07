@@ -1,0 +1,46 @@
+#########Create a Pod with main container busybox and which executes this
+# “while true; do echo ‘Hi I am from Main container’ >> /var/log/index.html; sleep 5; done” 
+# and with sidecar container with nginx image which exposes on port 80. 
+# Use emptyDir Volume and mount this volume on 
+# path /var/log for busybox and on 
+# path /usr/share/nginx/html for nginx container. 
+# Verify both containers are running.
+
+#Create busybox container
+kubectl run busybox --image=busybox --restart=Never --dry-run=client -oyaml -- /bin/sh -c "while true; do echo ‘Hi I am from Main container’ >> /var/log/index.html; sleep 5; done" > sidecar.yaml
+
+
+---
+
+apiVersion: v1
+kind: Pod
+metadata:
+  creationTimestamp: null
+  labels:
+    run: busybox
+  name: busybox
+spec:
+  containers:
+  - args:
+    - /bin/sh
+    - -c
+    - "while true; do echo ‘Hi I am from Main container’ >> /var/log/index.html; sleep 5; done"
+    image: busybox
+    name: busybox
+    voumeMounts:
+    - name: localVol
+      mountPath: /var/log
+  - name: sidecar
+    image: nginx
+    ports:
+    - containerPort: 80
+    voumeMounts:
+    - name: localVol
+      mountPath: /usr/share/nginx/html
+    resources: {}
+  volumes:
+  - name: localVol
+    emptyDir: {}
+  dnsPolicy: ClusterFirst
+  restartPolicy: Never
+status: {}

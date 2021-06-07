@@ -1,0 +1,30 @@
+#####Watch the job that runs 10 times one by one and verify 10 pods are created and delete those after it’s completed
+kubectl create job busybox --image=busybox --dry-run=client -oyaml -- /bin/sh -c "echo Hello From Jobs" > job.yaml
+
+#Edit job.yaml and add completions
+
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  creationTimestamp: null
+  name: busybox
+spec:
+  completions: 10
+  template:
+    metadata:
+      creationTimestamp: null
+    spec:
+      containers:
+      - command:
+        - /bin/sh
+        - -c
+        - Echo Hello From Jobs
+        image: busybox
+        name: busybox
+        resources: {}
+      restartPolicy: Never
+status: {}
+
+#####
+kubectl get jobs

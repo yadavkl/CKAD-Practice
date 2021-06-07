@@ -1,0 +1,10 @@
+#################Create an nginx pod in a default namespace and verify the pod running
+
+
+
+#Create:
+kubectl run nginx --image=nginx --restart=Never 
+
+#Verify:
+
+kubectl get po

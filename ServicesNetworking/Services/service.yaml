@@ -1,0 +1,58 @@
+#####Create an nginx pod with a yaml file with label my-nginx and expose the port 80
+kubectl run nginx --image=nginx --port=80 --dry-run=client -oyaml>nginx.yaml
+
+##Edit
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  creationTimestamp: null
+  labels:
+    run: nginx
+    app: my-nginx
+  name: nginx
+spec:
+  containers:
+  - image: nginx
+    name: nginx
+    ports:
+    - containerPort: 80
+    resources: {}
+  dnsPolicy: ClusterFirst
+  restartPolicy: Always
+status: {}
+
+###Create
+kubectl apply -f nginx.yaml
+
+####Create the service for this nginx pod with the pod selector app: my-nginx
+kubectl expose pod nginx --port 80 --target-port 80 --dry-run=client -oyaml>svc.yaml
+
+##Edit
+---
+apiVersion: v1
+kind: Service
+metadata:
+  creationTimestamp: null
+  labels:
+    app: my-nginx
+    run: nginx
+  name: nginx
+spec:
+  ports:
+  - port: 80
+    protocol: TCP
+    targetPort: 80
+  selector:
+    app: my-nginx
+    run: nginx
+status:
+  loadBalancer: {}
+
+#####Find out the label of the pod and verify the service has the same label
+kubectl describe service nginx | grep -i label
+####get the pod with labels
+kubectl get po nginx --show-labels
+####get the service and chekc the selector column
+kubectl get svc my-service -o wide
+

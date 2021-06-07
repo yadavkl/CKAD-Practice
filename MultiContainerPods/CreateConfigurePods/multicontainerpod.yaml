@@ -1,0 +1,53 @@
+#############Create a Pod with three busy box containers with commands
+# “ls; sleep 3600;”
+# “echo Hello World; sleep 3600;” and
+# “echo this is the third container; sleep 3600” respectively and check the status
+
+###To create multicontainer pod
+kubectl run busybox --image=busybox --restart=Never --dry-run=client -o yaml -- /bin/sh -c "sleep 3600; ls" > multicontainer.yaml
+
+#edit muticontainer.yaml
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  creationTimestamp: null
+  labels:
+    run: busybox
+  name: busybox
+spec:
+  containers:
+  - args:
+    - /bin/sh
+    - -c
+    - "ls; sleep 3600"
+    image: busybox
+    name: busybox1
+  - name: busybox2
+    image: busybox
+    args:
+    - /bin/sh
+    - -c
+    - "echo Hello World; sleep 3600;"
+  - name: busybox3
+    image: busybox
+    args:
+    - /bin/sh
+    - -c
+    - "echo this is the third container; sleep 3600"
+    resources: {}
+  dnsPolicy: ClusterFirst
+  restartPolicy: Never
+status: {}
+
+####monitor
+kubectl logs busybox -c busybox1
+kubectl logs busybox -c busybox2
+kubectl logs busybox -c busybox3
+
+########Check the previous logs of the second container busybox2 if any
+kubectl logs busybox -c busybox2 --previous (-P)
+
+########Run command ls in the third container busybox3 of the above pod
+kubectl exec -it busybox -c busybox3 -- ls

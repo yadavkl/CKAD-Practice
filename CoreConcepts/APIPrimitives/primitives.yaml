@@ -1,0 +1,18 @@
+########Defined some of the basic API primitives
+
+############List all the namespaces in the cluster
+kubectl get namespaces
+kubectl get ns
+
+############List all the pods in all namespaces
+kubectl get po --all-namespaces 
+kubectl get po -A
+
+#############List all the pods in the particular namespace
+kubectl get po -n <namespace>
+
+############List all the services in the particular namespace
+kubectl get svc -n <namespace> 
+
+##############List all the pods showing name and namespace with a json path expression
+kubectl get po -o=jsonpath="{.items[*]['metadata.name','metadata.namespace'}"

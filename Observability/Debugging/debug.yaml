@@ -1,0 +1,16 @@
+###### Create the pod with this 
+######kubectl create -f https://gist.githubusercontent.com/bbachi/212168375b39e36e2e2984c097167b00/raw/1fd63509c3ae3a3d3da844640fb4cca744543c1c/not-running.yml. 
+#####The pod is not in the running state. Debug it.
+kubectl create -f https://gist.githubusercontent.com/bbachi/212168375b39e36e2e2984c097167b00/raw/1fd63509c3ae3a3d3da844640fb4cca744543c1c/not-running.yml
+
+#debug
+kubectl get pods
+####ImagePullBackOff
+
+####edit 
+kubectl edit pod not-running
+###change image name 
+
+###OR
+kubectl set image pod/not-running not-running=nginx
+

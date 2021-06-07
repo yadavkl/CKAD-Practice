@@ -1,0 +1,33 @@
+#####List Persistent Volumes in the cluster
+kubectl get pv
+
+#####Create a hostPath PersistentVolume named task-pv-volume with storage 10Gi, 
+#####access modes ReadWriteOnce, storageClassName manual, and volume at /mnt/data and verify
+
+#####Create file pv.yaml
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: task-pv-volume
+spec:
+  capacity:
+    storage: 10Gi
+  volumeMode: Filesystem
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Recycle
+  storageClassName: manual
+  hostPath:
+    path: /mnt/data
+   
+#####Create PV
+kubectl apply -f pv.yaml
+
+#####verify
+kubectl get pv
+
+
+
+
+

@@ -1,0 +1,65 @@
+# 1. Create a new namespace k8s-challenge-2-a and assure all following operations 
+#    (unless different namespace is mentioned) are done in this namespace.
+# 2. Create a deployment named nginx-deployment of three pods running image nginx with a memory limit of 64MB.
+# 3. Expose this deployment under the name nginx-service inside our cluster on port 4444, 
+#    so point the service port 4444 to pod ports 80.
+# 4. Spin up a temporary pod named pod1 of image cosmintitei/bash-curl, 
+#    ssh into it and request the default nginx page on port 4444 of our nginx-service using curl.
+# 5. Spin up a temporary pod named pod2 of image cosmintitei/bash-curl in namespace k8s-challenge-2-b, 
+#    ssh into it and request the default nginx page on port 4444 of our nginx-service in namespace k8s-challenge-2-a using curl.
+
+alias k=kubectl 
+# 1. namespace
+k create ns k8s-challenge-2-a
+
+#chnage default namespace
+k config current-context
+k confing set-context --current --namspace=k8s-challenge-2-a
+
+# 2. deployment
+k create deploy nginx-deployment --image nginx  --dry-run=client -oyaml> deploy.yaml
+
+##Edit file
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: nginx-deployment
+  name: nginx-deployment
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: nginx-deployment
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: nginx-deployment
+    spec:
+      containers:
+      - image: nginx
+        name: nginx
+        resources: 
+          limits:
+            memory: 50Mi
+status: {}
+
+# 3. expose
+k expose deploy nginx-deployment --name=nginx-service --port=4444 --target-port=80
+
+# 4. pod1
+k run pod1 --image=cosmintitei/bash-curl -it --rm -- bash
+curl nginx-service:4444
+# egt nginx page
+
+# 5. pod2
+k create ns k8s-challenge-2-b
+k config set-context --currect --namespace=k8s-challenge-2-b
+
+k run pod2 --image=cosmintitei/bash-curl -it --rm -- bash
+# get nginx page
+curl nginx-service.k8s-challenge-2-a:4444

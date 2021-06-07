@@ -1,0 +1,41 @@
+#####Create a Job with an image node which prints node version and also verifies there is a pod created for this job
+kubectl create job nodeversion --image=node -- node -v
+kubectl get job -w
+kubectl get pod
+
+#####Get the logs of the job just created
+kubectl logs <podname>
+
+#####Output the yaml file for the Job with the image busybox which echos “Hello I am from job”
+kubectl create job busybox --image=busybox --dry-run=client -oyaml -- /bin/sh -c "echo Hello I am from job" > job.yaml
+
+#job.yaml
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  creationTimestamp: null
+  name: busybox
+spec:
+  template:
+    metadata:
+      creationTimestamp: null
+    spec:
+      containers:
+      - command:
+        - /bin/sh
+        - -c
+        - echo Hello I am from job
+        image: busybox
+        name: busybox
+        resources: {}
+      restartPolicy: Never
+status: {}
+
+#####Verify the job and the associated pod is created and check the logs as well
+kubectl get job
+kubectl get po
+kubectl logs <pod-name>
+
+#####Delete the job we just created
+kubectl delete job busybox

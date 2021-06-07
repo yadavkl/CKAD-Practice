@@ -1,0 +1,36 @@
+####Create pod with an nginx image and configure the pod with 
+####capabilities NET_ADMIN and SYS_TIME verify the capabilities
+kubectl run nginx-cap --image=nginx --dry-run=client -oyaml>nginx-cap.yaml
+
+#edit file
+
+---
+
+apiVersion: v1
+kind: Pod
+metadata:
+  creationTimestamp: null
+  labels:
+    run: nginx-cap
+  name: nginx-cap
+spec:
+  containers:
+  - image: nginx
+    name: nginx-cap
+    ecurityContext:
+      capabilities:
+        add: ["SYS_TIME", "NET_ADMIN"]
+    resources: {}
+  dnsPolicy: ClusterFirst
+  restartPolicy: Always
+status: {}
+
+###verify
+kubectl exec -it nginx -- sh
+cd /proc/1
+cat status
+
+# you should see these values
+CapPrm: 00000000aa0435fb
+CapEff: 00000000aa0435fb
+

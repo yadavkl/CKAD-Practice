@@ -1,0 +1,46 @@
+#####Create a Pod with an image Redis and configure a volume that lasts for the lifetime of the Pod
+kubectl run redis --image=redis --dry-run=client -oyaml> redis.yaml
+
+#edit redis.yaml file add volume
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  creationTimestamp: null
+  labels:
+    run: redis
+  name: redis
+spec:
+######Start
+  volumes:
+  - name: local-vol
+    emptyDir: {}
+####end
+  containers:
+  - image: redis
+    name: redis
+######Start    
+    volumeMounts:
+    - name: local-vol
+      mountPath: /data/redis
+####end      
+    resources: {}
+  dnsPolicy: ClusterFirst
+  restartPolicy: Always
+status: {}
+
+####Create
+kubectl apply -f redis.yaml
+
+#####Exec into the above pod and create a file named file.txt with the text 
+#####‘This is called the file’ in the path /data/redis and open another tab and exec
+#####again with the same pod and verifies file exist in the same path.
+kubectl exec -it redis -- /bin/sh
+ca /data/redis
+echo 'This is called the file' > file.txt
+
+#####Delete the above pod and create again from the same yaml file and verifies there is no file.txt in the path /data/redis
+kubectl delete pod redis
+kubectl apply -f redis.yaml
+kubectl exec -it redis -- /bin/sh
+cat /data/redis/file.txt # file doesn't exist

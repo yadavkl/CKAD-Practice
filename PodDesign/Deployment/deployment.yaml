@@ -1,0 +1,42 @@
+#######Create a deployment called webapp with image nginx with 5 replicas
+kubectl create deployment webapp --image=nginx --dry-run=client -o yaml > deploy.yaml
+
+######Edit file
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: webapp
+  name: webapp
+spec:
+  replicas: 5 ####default replica 1 update to 5
+  selector:
+    matchLabels:
+      app: webapp
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: webapp
+    spec:
+      containers:
+      - image: nginx
+        name: nginx
+        resources: {}
+status: {}
+
+######Get the deployment you just created with labels
+kubectl get deploy --show-labels
+
+######Output the yaml file of the deployment you just created
+kubectl get deploy -o yaml
+
+######Get the pods of this deployment
+kubectl get deploy --show-labels
+kubectl get pods -l app=webapp
+
+

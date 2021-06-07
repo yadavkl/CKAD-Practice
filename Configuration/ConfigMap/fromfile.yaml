@@ -1,0 +1,10 @@
+#####Create a file called config.txt with two values key1=value1 and key2=value2 and verify the file
+cat >> config.txt
+key1=value1 
+key2=value2 
+
+cat config.txt
+
+#####Create a configmap named keyvalcfgmap and read data from the file config.txt and verify that configmap is created correctly
+kubectl create cm keyvalcfgmap --from-file=config.txt
+kubectl describe cm keyvalcfgmap

@@ -1,0 +1,15 @@
+#####List all the configmaps in the cluster
+kubectl get cm
+     or
+kubectl get configmap
+
+#####Create a configmap called myconfigmap with literal value appname=myapp
+kubectl create cm myconfigmap --from-literal=appname=myapp
+
+#####Verify the configmap we just created has this data
+kubectl get cm
+kubectl describe cm myconfigmap
+
+#####delete the configmap myconfigmap we just created
+kubectl delete cm myconfigmap
+

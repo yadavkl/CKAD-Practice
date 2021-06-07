@@ -1,0 +1,9 @@
+###########List the nginx pod with custom columns POD_NAME and POD_STATUS
+kubectl get po nfinx -o=custom-columns="POD_NAME:.metadata.name, POD_STATUS:.status.containerStatuses[].state"
+
+############ List all the pods sorted by name
+kubectl get po --sort-by=.metadata.name
+
+############List all the pods sorted by created timestamp
+
+kubectl get po --sort-by=.metadata.creationTimestamp

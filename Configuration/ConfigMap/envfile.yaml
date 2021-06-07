@@ -1,0 +1,37 @@
+#####Create an env file file.env with var1=val1 and create a configmap envcfgmap from this env file and verify the configmap
+echo var1=val1 > file.env
+kubectl create cm envcfgmap --from-env-file=file.env
+kubectl get cm envcfgmap -o yaml --export
+
+##### Create an nginx pod and load environment values from the above configmap envcfgmap and exec 
+##### into the pod and verify the environment variables and delete the pod
+
+---
+####Edit file
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  creationTimestamp: null
+  labels:
+    run: nginx
+  name: nginx
+spec:
+  containers:
+  - image: nginx
+    name: nginx
+    env:
+    - name: ENVIRONMENT
+      valueFrom:
+        configMapKeyRef:
+          name: envcfgmap
+          key: var1
+    resources: {}
+  dnsPolicy: ClusterFirst
+  restartPolicy: Always
+status: {}
+
+####
+kubectl apply -f nginx.yaml
+kubectl exec -it nginx -- /bin/sh
+env

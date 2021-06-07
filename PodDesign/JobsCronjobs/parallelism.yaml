@@ -1,0 +1,28 @@
+#####Create the same job and make it run 10 times parallel
+kubectl create job busybox --image=busybox --dry-run=client -oyaml -- /bin/sh -c "echo Hello From Jobs" > job.yaml
+#Edit and add parallelism
+
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  creationTimestamp: null
+  name: busybox
+spec:
+  parallelism: 10
+  template:
+    metadata:
+      creationTimestamp: null
+    spec:
+      containers:
+      - command:
+        - /bin/sh
+        - -c
+        - echo Hello From Jobs
+        image: busybox
+        name: busybox
+        resources: {}
+      restartPolicy: Never
+status: {}
+
+

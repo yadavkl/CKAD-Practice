@@ -1,0 +1,96 @@
+#####Create a Pod nginx and specify a memory request and a memory limit of 100Mi and 200Mi respectively.
+kubectl run nginx-cap --image=nginx --dry-run=client -oyaml>nginx-cap.yaml
+
+#edit file
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  creationTimestamp: null
+  labels:
+    run: nginx-cap
+  name: nginx-cap
+spec:
+  containers:
+  - image: nginx
+    name: nginx-cap
+    ecurityContext:
+      capabilities:
+        add: ["SYS_TIME", "NET_ADMIN"]
+    resources:
+      requests:
+        memory: 100Mi
+      limits:
+        memory: 200Mi
+  dnsPolicy: ClusterFirst
+  restartPolicy: Always
+status: {}
+
+###verify
+kubectl top pod
+
+#####Create a Pod nginx and specify a CPU request and a CPU limit of 0.5 and 1 respectively.
+#####Create a Pod nginx and specify both CPU, memory requests and limits together and verify.
+###Edit file
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  creationTimestamp: null
+  labels:
+    run: nginx-cap
+  name: nginx-cap
+spec:
+  containers:
+  - image: nginx
+    name: nginx-cap
+    ecurityContext:
+      capabilities:
+        add: ["SYS_TIME", "NET_ADMIN"]
+    resources:
+      requests:
+        memory: 100Mi
+        cpu: 0.5
+      limits:
+        memory: 200Mi
+        cpu: 1
+  dnsPolicy: ClusterFirst
+  restartPolicy: Always
+status: {}
+
+
+#####Create a Pod nginx and specify a memory request and a memory limit of 100Gi and 200Gi 
+#####respectively which is too big for the nodes and verify 
+#####pod fails to start because of insufficient memory
+
+###Edit file
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  creationTimestamp: null
+  labels:
+    run: nginx-cap
+  name: nginx-cap
+spec:
+  containers:
+  - image: nginx
+    name: nginx-cap
+    ecurityContext:
+      capabilities:
+        add: ["SYS_TIME", "NET_ADMIN"]
+    resources:
+      requests:
+        memory: 100Gi
+        cpu: 0.5
+      limits:
+        memory: 200Gi
+        cpu: 1
+  dnsPolicy: ClusterFirst
+  restartPolicy: Always
+status: {}
+
+###Verify
+kubectl describe po nginx # you can see pending state

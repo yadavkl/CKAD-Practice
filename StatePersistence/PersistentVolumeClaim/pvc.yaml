@@ -1,0 +1,24 @@
+#####Create a PersistentVolumeClaim of at least 
+#####3Gi storage and access mode ReadWriteOnce and verify status is Bound
+
+####Create pvc.yaml
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: task-pvc
+spec:
+  storageClassName: manual 
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 3Gi
+
+####Create
+kubectl apply -f pvc.yaml
+
+#####Delete persistent volume and PersistentVolumeClaim we just created
+kubectl delete pvc task-pvc
+kubectl delete pv task-pv-volume

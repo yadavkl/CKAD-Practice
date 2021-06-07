@@ -1,0 +1,20 @@
+#####Create a busybox pod with this command “echo I am from busybox pod; sleep 3600;” and verify the logs.
+kubectl run busybox --image busybox -- /bin/sh -c "echo I am from busybox pod; sleep 3600;"
+
+#Verify
+kubectl logs busybox
+
+#####copy the logs of the above pod to the busybox-logs.txt and verify
+kubectl logs busybox > busybox-logs.txt
+cat busybox-logs.txt
+
+#####ist all the events sorted by timestamp and put them into file.log and verify
+
+kubectl get events --sort-by=.metadata.creationTimestamp > file.log
+
+#####Create a pod with an image alpine which executes this command 
+#####”while true; do echo ‘Hi I am from alpine’; sleep 5; done” and 
+#####verify and follow the logs of the pod
+kubectl run hello --image=alpine --restart=Never  -- /bin/sh -c "while true; do echo 'Hi I am from Alpine'; sleep 5;done"
+##verify
+kubectl logs --follow hello

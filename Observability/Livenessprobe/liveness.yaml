@@ -1,0 +1,34 @@
+#####Create an nginx pod with containerPort 80 
+#####and it should check the pod running at endpoint / healthz
+#####on port 80 and verify and delete the pod.
+kubectl run nginx-readi --image=nginx --restart=Never --port=80 --dry-run=client -oyaml > nginx-readi.yaml
+
+##Edit file
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  creationTimestamp: null
+  labels:
+    run: nginx-readi
+  name: nginx-readi
+spec:
+  containers:
+  - image: nginx
+    name: nginx-readi
+    ports:
+    - containerPort: 80
+    livenessProbe:
+      httpGet:
+        path: /healthz
+        port: 80
+    resources: {}
+  dnsPolicy: ClusterFirst
+  restartPolicy: Never
+status: {}
+
+###verify
+kubectl describe pod nginx | grep -i readiness
+
+###delete
+kubectl delete po nginx

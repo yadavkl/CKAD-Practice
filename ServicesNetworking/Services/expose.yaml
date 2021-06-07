@@ -1,0 +1,2 @@
+#####Delete the service and create the service with kubectl expose command and verify the label
+kubectl expose pod nginx --port 80 --target-port 80 --dry-run=client -oyaml>svc.yaml

@@ -1,0 +1,12 @@
+#######Annotate the pods with name=webapp
+kubectl annotate pod nginx name=webapp
+
+######Verify the pods that have been annotated correctly
+kubectl describe pod nginx | grep Annotations
+kubectl describe pod nginx | grep -i annotation
+
+######Remove the annotations on the pods and verify
+kubectl annotate pod nginx name-
+
+######Remove all the pods that we created so far
+kubectl delete pod --all

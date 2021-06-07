@@ -1,0 +1,41 @@
+#1.Create a pod of image bash which runs once to execute the command hostname > /tmp/hostname && sleep 1d.
+#2. Export and edit its YAML to add a label my-label: test.
+#3. Create the pod from the YAML file.
+#4. Connect via ssh to the pod. Make sure its hostname is written into the file /tmp/hostname.
+#5. Delete the pod instantly without waiting time.
+
+###alias
+
+alias k=kubectl
+###Create pod
+kubectl run bash --image=bash --dry-run=client -oyaml -- bash -c "hostname > /tmp/hostname && sleep 1d" > bash.yaml
+
+##Edit file 
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  creationTimestamp: null
+  labels:
+    run: bash
+    my-label: test
+  name: bash
+spec:
+  containers:
+  - args:
+    - bash
+    - -c
+    - hostname > /tmp/hostname && sleep 1d
+    image: bash
+    name: bash
+    resources: {}
+  dnsPolicy: ClusterFirst
+  restartPolicy: Always
+status: {}
+
+###Check
+kubectl exec -it bash -- bash
+cat /etc/namespace
+kubectl delete pod pod1 --force --grace-period 0
+
+

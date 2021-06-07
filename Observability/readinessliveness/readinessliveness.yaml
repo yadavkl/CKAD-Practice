@@ -1,0 +1,72 @@
+#####Create an nginx pod with containerPort 80 and it should check the pod running at 
+#####endpoint /healthz on port 80 and it should only receive traffic only it 
+#####checks the endpoint / on port 80. verify the pod.
+
+##Edit
+apiVersion: v1
+kind: Pod
+metadata:
+  creationTimestamp: null
+  labels:
+    run: nginx-readi
+  name: nginx-readi
+spec:
+  containers:
+  - image: nginx
+    name: nginx-readi
+    ports:
+    - containerPort: 80
+    readinessProbe:
+      httpGet:
+        path: /
+        port: 80
+    livenessProbe:
+      httpGet:
+        path: /healthz
+        port: 80
+    resources: {}
+  dnsPolicy: ClusterFirst
+  restartPolicy: Never
+status: {}
+
+###verify
+kubectl describe pod nginx | grep -i readiness
+kubectl describe pod nginx | grep -i liveness
+
+#####Check what all are the options that we can configure with readiness and liveness probes
+kubectl explain Pod.spec.conainers.livenessProbe
+kubectl expalin Pod.spec.containers.readinessProbe
+
+
+#####Create the pod nginx with the above liveness and readiness probes so that it should wait 
+#####for 20 seconds before it checks liveness and readiness probes and it should check every 25 seconds.
+##Edit
+apiVersion: v1
+kind: Pod
+metadata:
+  creationTimestamp: null
+  labels:
+    run: nginx-readi
+  name: nginx-readi
+spec:
+  containers:
+  - image: nginx
+    name: nginx-readi
+    ports:
+    - containerPort: 80
+    readinessProbe:
+      initialDealySecond: 20
+      periodSecond: 25
+      httpGet:
+        path: /
+        port: 80
+    livenessProbe:
+      initialDealySecond: 20
+      periodSecond: 25
+      httpGet:
+        path: /healthz
+        port: 80
+    resources: {}
+  dnsPolicy: ClusterFirst
+  restartPolicy: Never
+status: {}

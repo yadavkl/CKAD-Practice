@@ -1,0 +1,65 @@
+######Get all the nodes with labels (if using minikube you would get only master node)
+kubectl get nodes --show-labels
+
+######Label the node (minikube if you are using) nodeName=nginxnode
+kubectl label node node01 nodeName=nginxnode
+
+######Create a Pod that will be deployed on this node with the label nodeName=nginxnode
+kubectl run nginx --image=nginx --restart=Never --dry-run=client -oyaml> nginx.yaml
+
+###Edit nginx.yaml and add node affinity
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  creationTimestamp: null
+  labels:
+    run: nginx
+  name: nginx
+spec:
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+        - matchExpressions:
+          - key: nodeName
+            operator: In
+            values:
+            - nginxnode
+  containers:
+  - image: nginx
+    name: nginx
+    resources: {}
+  dnsPolicy: ClusterFirst
+  restartPolicy: Never
+status: {}
+#can use node selector also
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  creationTimestamp: null
+  labels:
+    run: nginx
+  name: nginx
+spec:
+  nodeSelector:
+    nodeName: nginxnode
+  containers:
+  - image: nginx
+    name: nginx
+    resources: {}
+  dnsPolicy: ClusterFirst
+  restartPolicy: Never
+status: {}
+########See status
+kubectl get pods -o wide
+
+##########Verify the pod that it is scheduled with the node selector
+kubectl describe pos nginx | grep nodeName
+kubectl describe pos nginx | grep Node-Selector
+
+########Verify the pod nginx that we just created has this label
+kubectl describe pod nginx | grep Labels
+

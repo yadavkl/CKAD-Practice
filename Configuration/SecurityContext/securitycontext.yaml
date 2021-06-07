@@ -1,0 +1,67 @@
+#####Create a pod called secbusybox with the image busybox which executes 
+#####command sleep 3600 and makes sure any Containers in the Pod, 
+#####all processes run with user ID 1000 and with group id 2000 and verify.
+
+kubectl run secbusybox --image=busybox --restart=Never --dry-run=client -oyaml -- /bin/sh -c "sleep 3600" > scu.yaml
+
+###Edit file
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  creationTimestamp: null
+  labels:
+    run: secbusybox
+  name: secbusybox
+spec:
+  securityContext:  #add security context
+    runAsUser: 1000
+    runAsGroup: 2000
+  containers:
+  - args:
+    - /bin/sh
+    - -c
+    - sleep 3600
+    image: busybox
+    name: secbusybox
+    resources: {}
+  dnsPolicy: ClusterFirst
+  restartPolicy: Never
+status: {}
+
+###Verify
+kubectl exec -it secbusybox -- /bin/sh
+id # will show groupid and userid
+
+
+#####Create the same pod as above this time set the securityContext for the container 
+#####as well and verify that the securityContext of container overrides the Pod level securityContext.
+apiVersion: v1
+kind: Pod
+metadata:
+  creationTimestamp: null
+  labels:
+    run: secbusybox
+  name: secbusybox
+spec:
+  securityContext:  #add security context
+    runAsUser: 1000   
+  containers:
+  - args:
+    - /bin/sh
+    - -c
+    - sleep 3600
+    image: busybox
+    name: secbusybox
+    securityContext:  #add security context
+      runAsUser: 2000   
+    resources: {}
+  dnsPolicy: ClusterFirst
+  restartPolicy: Never
+status: {}
+
+###Verify
+kubectl exec -it secbusybox -- /bin/sh
+id # will show groupid and userid
+####Contaner security context will overrite pod
+~        

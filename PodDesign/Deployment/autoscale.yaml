@@ -1,0 +1,11 @@
+#####Apply the autoscaling to this deployment with minimum 10 and maximum 20 replicas 
+#####and target CPU of 85% and verify hpa is created and replicas are increased to 10 from 1
+kubectl autoscale deploy webapp --min=10 --max=20 --cpu-percent=85
+kubectl get hpa
+kubectl get pod -l app=webapp
+
+#####Clean the cluster by deleting deployment and hpa you just created
+kubectl delete deploy webapp
+kubectl delete hpa webapp
+
+#####

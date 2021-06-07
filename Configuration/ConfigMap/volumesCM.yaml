@@ -1,0 +1,37 @@
+#####Create a configmap called cfgvolume with values var1=val1, var2=val2 and 
+#####create an nginx pod with volume nginx-volume which reads data from this 
+#####configmap cfgvolume and put it on the path /etc/cfg
+
+###Configamp 
+kubectl create cm cfgvolume --from-literal=var1=val1 --from-literal=var2=val2
+#Create pod yaml file
+kubectl run nginx-volume --image nginx --dry-run=client -oyaml> nginx-vol.yaml
+
+#Edit file
+apiVersion: v1
+kind: Pod
+metadata:
+  creationTimestamp: null
+  labels:
+    run: nginx-volume
+  name: nginx-volume
+spec:
+  volumes:
+  - name: conf-vol
+    configMap:
+      name: cfgvolume
+  containers:
+  - image: nginx
+    name: nginx-volume
+    volumeMounts:
+    - name: conf-vol
+      mountPath: /etc/cfg
+    resources: {}
+  dnsPolicy: ClusterFirst
+  restartPolicy: Always
+status: {}
+
+###Check
+kubectl exec -it nginx-volume -- /bin/sh
+cd /etc/conf 
+ls -al

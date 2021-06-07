@@ -1,0 +1,28 @@
+############Get the pods with label information
+kubectl get pods --show-labels
+
+############Create 5 nginx pods in which two of them is labeled env=prod and three of them is labeled env=dev
+kubectl run nginx-dev-1 --image=nginx --restart=Never -labels="env=dev"
+kubectl run nginx-dev-2 --image=nginx --restart=Never -labels="env=dev"
+kubectl run nginx-dev-3 --image=nginx --restart=Never -labels="env=dev"
+
+kubectl run nginx-prod-1 --image=nginx --restart=Never -labels="env=prod"
+kubectl run nginx-prod-2 --image=nginx --restart=Never -labels="env=prod"
+
+######Verify all the pods are created with correct labels
+kubectl get pods --show-labels
+
+######Get the pods with label env=dev
+kubectl get pods -l env=dev
+
+######Get the pods with label env=dev and also output the labels
+kubectl get pods - env=dev --show-labels
+
+#######Get the pods with label env
+kubectl get pod -L env
+
+######Get the pods with labels env=dev and env=prod
+kubectl get pods -l 'env in (prod,dev)'
+
+######Get the pods with labels env=dev and env=prod and output the labels as well
+kubectl get pods -l 'env in (prod,dev)' --show-labels

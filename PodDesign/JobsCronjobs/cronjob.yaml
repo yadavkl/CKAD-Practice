@@ -1,0 +1,14 @@
+######Create a Cronjob with busybox image that prints date and hello from kubernetes cluster message for every minute
+kubectl create cronjob cluster-message --image=busybox --schedule="*/1 * * * *" -- /bin/sh -c "date; echo hello from kubernetes cluster"
+
+#####Output the YAML file of the above cronjob
+kubectl get cj cluster-message -oyaml 
+
+#####Verify that CronJob creating a separate job and pods for every minute to run and verify the logs of the pod
+kubectl get cj -w
+kubectl get pods 
+
+#####Delete the CronJob and verify all the associated jobs and pods are also deleted.
+kubectl delete cj cluster-message
+
+#####

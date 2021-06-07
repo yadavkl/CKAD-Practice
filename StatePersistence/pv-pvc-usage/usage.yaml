@@ -1,0 +1,33 @@
+#####Create PersistentVolume named task-pv-volume with storage 10Gi, 
+#####access modes ReadWriteOnce, storageClassName manual, and volume at /mnt/data and 
+#####Create a PersistentVolumeClaim of at least 3Gi storage and access mode ReadWriteOnce and verify status is Bound
+kubectl apply -f pv.yaml
+kubectl apply -f pvc.yaml
+
+#####reate an nginx pod with containerPort 80 and with a PersistentVolumeClaim 
+#####task-pvc and has a mouth path "/usr/share/nginx/html"
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  creationTimestamp: null
+  labels:
+    run: nginx
+  name: nginx
+spec:
+  volumes:
+  - name: pvc-vol
+    persistentVolumeClaim:
+      claimName: task-pvc
+  containers:
+  - image: nginx
+    name: nginx
+    ports:
+    - containerPort: 80 
+    volumeMounts:
+    - name: pvc-vol
+      mountPath: /usr/share/nginx/html    
+    resources: {}
+  dnsPolicy: ClusterFirst
+  restartPolicy: Never
+status: {}
